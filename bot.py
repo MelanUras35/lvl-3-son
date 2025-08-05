@@ -22,7 +22,7 @@ async def on_message(message):
         return
     text = message.content.strip()
 
-    # Ping testi
+    
     if text == "!ping":
         await message.channel.send("pong")
         return
@@ -34,7 +34,7 @@ async def on_message(message):
         await message.channel.send(cevap or "Üzgünüm, bu soru SSS'de bulunamadı.")
         return
 
-    # !destek komutu
+    
     if text.startswith("!destek "):
         parts = text.split(" ", 2)
         if len(parts) < 3:
@@ -49,12 +49,12 @@ async def on_message(message):
         await message.channel.send(f"Sorunuz '{bolum}' departmanına iletildi!\n>Soru: {soru}")
         return
 
-    # !sorular komutu: tüm SSS başlıklarını listeler
+    # !sorular komutu
     if text == "!sorular":
         for i, soru in enumerate(config.faqs.keys(), start=1):
             await message.channel.send(f"{i}. {soru}")
         return
 
-    # Geçersiz komut uyarısı
+    
     if text.startswith("!"):
         await message.channel.send("Geçersiz komut. !faq, !destek veya !sorular kullanın.")
