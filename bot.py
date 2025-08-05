@@ -1,4 +1,4 @@
-port discord
+import discord
 import config
 import logging
 
