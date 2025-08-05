@@ -1,4 +1,4 @@
-import discord
+port discord
 import config
 import logging
 
@@ -27,6 +27,7 @@ stok_adet = {
     "Tükenmez Kalem": 80,
 }
 
+
 @client.event
 async def on_ready():
     logging.info(f"Bot çevrimiçi: {client.user}")
@@ -37,21 +38,31 @@ async def on_message(message):
         return
 
     text = message.content.strip()
+    lower = text.lower()
 
     # ping-pong
-    if text == "!ping":
+    if lower == "!ping":
         await message.channel.send("pong")
         return
 
-    # !faq komutu
-    if text.startswith("!faq "):
+    # !stokdurumu komutu ve alias olarak !faq stok durumu / !faq stokdurumu
+    if lower in ("!stokdurumu", "!faq stok durumu", "!faq stokdurumu"):
+        mesaj = "🔍 **Stok Durumu** 🔍\n" + "\n".join(
+            f"- **{urun}**: {adet} adet stokta"
+            for urun, adet in stok_adet.items()
+        )
+        await message.channel.send(mesaj)
+        return
+
+    # !faq komutu (diğer SSS komutları)
+    if lower.startswith("!faq "):
         key = text[5:].lower()
         cevap = config.faqs.get(key)
         await message.channel.send(cevap or "Üzgünüm, bu soru SSS'de bulunamadı.")
         return
 
     # !destek komutu
-    if text.startswith("!destek "):
+    if lower.startswith("!destek "):
         parts = text.split(" ", 2)
         if len(parts) < 3:
             await message.channel.send("Kullanım: !destek <departman> <soru>")
@@ -69,28 +80,18 @@ async def on_message(message):
         return
 
     # !sorular komutu
-    if text == "!sorular":
+    if lower == "!sorular":
         for i, soru in enumerate(config.faqs.keys(), start=1):
             await message.channel.send(f"{i}. {soru}")
-        return
-
-    # !stokdurumu komutu
-    if text == "!stokdurumu":
-        mesaj = "🔍 **Stok Durumu** 🔍\n" + "\n".join(
-            f"- **{urun}**: {adet} adet stokta" for urun, adet in stok_adet.items()
-        )
-        await message.channel.send(mesaj)
         return
 
     # geçersiz komut
     if text.startswith("!"):
         await message.channel.send(
             "Geçersiz komut. Kullanabileceğin komutlar:\n"
-            "`!ping`, `!faq <soru>`, `!destek <departman> <soru>`, "
-            "`!sorular`, `!stokdurumu`"
+            "`!ping`, `!stokdurumu`, `!faq <soru>`, `!destek <departman> <soru>`, `!sorular`"
         )
         return
 
-# Botu çalıştır
 if __name__ == "__main__":
     client.run(config.TOKEN)
